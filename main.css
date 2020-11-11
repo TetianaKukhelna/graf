@@ -1,0 +1,90 @@
+html {
+    padding: 0;
+    margin: 0;
+}
+body{
+    padding: 50px;
+    background-color: #1d2124;
+    color: #3177b5;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+}
+
+footer{
+    background-color: #000000;
+    color: #bababa;
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-right: auto;
+    margin-left: auto;
+    align-items: center;
+
+
+}
+footer a {
+    text-decoration: none;
+    color: #bababa;
+    text-align: center;
+}
+
+h1{
+    text-align: center;
+}
+
+
+.flex-center{
+    justify-content: center;
+}
+
+.prettyCheckbox input[type='checkbox']{
+    width: 25px;
+    height: 25px;
+}
+
+.prettyCheckbox label{
+    font-size: 28px;
+    margin-right: 10px;
+}
+
+.controlMenu{
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+    font-size: 16px;
+}
+
+.controlMenu input[type='number']{
+    width: 100px;
+    display: flex;
+}
+
+.controlMenu > *{
+    margin-right: 15px;
+}
+.controlMenu input[type='checkbox']{
+    width: 25px;
+    height: 25px;
+}
+#amplitudeValueWrapper{
+    width: 70px;
+}
+
+#amplitudeValue {
+    width: 70px;
+}
+
+
+
+
+
+
+

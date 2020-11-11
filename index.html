@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="static/jQuery351.js"></script>
+    <script src="static/plotly-latest.min.js"></script>
+
+    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="main.css">
+
+</head>
+<body>
+<header>
+    <h1>Grafické znázornenie</h1>
+</header>
+
+<section>
+    <div class="row justify-content-md-center" id="errorData"></div>
+    <div class="row flex-center prettyCheckbox">
+        <div class="col-md-auto">
+            <label class="form-check-label" for="sin">Sin: </label>
+            <input id="sin" type="checkbox" class="graphChecker" checked>
+            <label class="form-check-label" for="cos">Cos: </label>
+            <input id="cos" type="checkbox" class="graphChecker" checked>
+        </div>
+    </div>
+    <div id="plotlyGraph"></div>
+    <div class="row">
+        <div class="col-md-auto controlMenu">
+            <input id="enableAmplitude" class="form-check-input" type="checkbox" value="">
+            <label class="form-check-label" for="enableAmplitude">Amplituda</label>
+            <div id="amplitudeValueWrapper">
+                <input id="amplitudeValue" type="number" class="form-control" min="1" max="10" value="1" style="display: none">
+            </div>
+            <button id="stop" type="button" class="btn btn-warning">STOP</button>
+        </div>
+    </div>
+</section>
+<footer class="footer">
+    <a href="https://www.facebook.com/tetiana.kukhelna">Power by Tetiana </a>
+</footer>
+</body>
+<script>
+const serverNotImplementWebSocketError = "Prepáčte, váš server nepodporuje túto službu..."
+const eventSourceUrl = "http://vmzakova.fei.stuba.sk/sse/sse.php"
+$(document).ready(function () {
+    var amplitude = 1;
+
+    var layout = {
+        plot_bgcolor:"#1d2124",
+        paper_bgcolor:"#1d2124",
+        xaxis: {
+            title: 'time',
+            color: "#939393"
+        },
+        yaxis: {
+            color: "#939393"
+        }
+    };
+
+    var dataStructureSin = {
+        x: [],
+        y: [],
+        name: "sin",
+        visible: true,
+        color: "#000000"
+    }
+
+    var dataStructureCos = {
+        x: [],
+        y: [],
+        name: "cos",
+        visible: true
+    }
+
+    let dataStructure = {
+        "sin": dataStructureSin,
+        "cos": dataStructureCos
+    }
+
+    var dataPointList = [];
+    var stopGraph = false;
+    if (typeof (EventSource) !== "undefined") {
+        const source = new EventSource(eventSourceUrl);
+
+        source.addEventListener("message", function (e) {
+            const data = JSON.parse(e.data);
+
+            dataStructureSin.x.push(data.x);
+            dataStructureSin.y.push(data.y1 * amplitude);
+
+            dataStructureCos.x.push(data.x);
+            dataStructureCos.y.push(data.y2 * amplitude);
+
+            dataPointList = [dataStructureSin, dataStructureCos];
+            if (!stopGraph) {
+                Plotly.newPlot("plotlyGraph", dataPointList, layout);
+            }
+        }, false);
+    } else {
+        document.getElementById("errorData").innerHTML = serverNotImplementWebSocketError;
+    }
+
+    window.onresize = function (event) {
+        Plotly.newPlot("plotlyGraph", dataPointList, layout);
+    };
+
+
+    $('.graphChecker').on("click", function (e) {
+        console.log(e.currentTarget.id, e.currentTarget.checked)
+        dataStructure[e.currentTarget.id].visible = e.currentTarget.checked
+        Plotly.newPlot("plotlyGraph", dataPointList, layout);
+    });
+
+    $('#stop').on("click", function (e) {
+        let stop = document.getElementById("stop");
+        stop.disabled = "true";
+        stopGraph = true;
+    });
+
+    $('#enableAmplitude').on('click', function () {
+        let amplValue = $("#amplitudeValue")[0]
+        if (amplValue.style.display == "none" || amplValue.style.display == ""){
+            amplValue.style.display = "flex";
+            amplitude = Number(amplValue.value)
+            console.log('New amplitude value: ', amplitude)
+        } else {
+            amplValue.style.display = "none";
+            amplitude = 1
+            console.log('New amplitude value: ', amplitude)
+        }
+    });
+
+
+    $('#amplitudeValue').on('input', function () {
+        let amplValue = $("#amplitudeValue")[0]
+        if (amplValue.value > 0 && amplValue.value < 11) {
+            amplitude = Number(amplValue.value)
+            console.log('New amplitude value: ', amplitude)
+            return true;
+        } else {
+            if (amplValue.value < 1)
+                amplValue.value = 1;
+            else if (amplValue.value > 10)
+                amplValue.value = 10;
+            return false;
+        }
+    });
+
+});
+
+</script>
+</html>
